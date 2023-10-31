@@ -10,7 +10,7 @@ module.exports = (app) => {
   if (!process.env.SCREENSHOTLAYER_KEY || !process.env.IMBB_KEY) {
     throw new Error("Insufficient Environment Variables");
   }
-  app.log.info("Yay, the app was loaded!");
+  app.log.info("The app was loaded!");
   app.on(["pull_request.opened", "pull_request.reopened"], async (context) => {
     const { owner, repo, pull_number } = context.pullRequest();
     const { data: changedFiles } = await context.octokit.pulls.listFiles({
@@ -59,21 +59,21 @@ module.exports = (app) => {
 
         // Create a formatted message or comment
         const commentMessage = `
-🔍 **ReviewMate Analysis**
-
+# 🔍 ReviewMate Analysis
 File: [${file.filename}](${file.blob_url})
 Content URL: ${url}
 Description: ${description}
 Repository: ${repository}
 
-🔒 **Authorization**
+## 🔒 Authorization
 - Old File Owner: ${oldFileOwner}
 - New File Owner: ${newFileOwner}
-- PR Owner: ${prOwner}
-- Authorized: ${authorized ? "Yes" : "No"}
+- PR Author: ${prOwner}
 
-📸 **ScreenShot**
-![ScreenShot of ${file.filename}](${imageUrl})
+**Authorized**: ${authorized ? "✅" : "❌"}
+
+## 📸 Screenshot
+![Screenshot of ${file.filename}](${imageUrl})
 `;
 
         // Post the comment to the GitHub pull request
@@ -106,16 +106,14 @@ Repository: ${repository}
         const description = fileContent.description || "N/A";
         const repository = fileContent.repo || "N/A";
         const commentMessage = `
-🔍 **ReviewMate Analysis**
-
+# 🔍 ReviewMate Analysis
 File: [${file.filename}](${file.blob_url})
 Content URL: ${url}
 Description: ${description}
 Repository: ${repository}
 
-📸 **ScreenShot**
-
-![ScreenShot of ${file.filename}](${imageUrl})
+## 📸 Screenshot
+![Screenshot of ${file.filename}](${imageUrl})
 `;
 
         // Post the comment to the GitHub pull request
@@ -138,14 +136,14 @@ Repository: ${repository}
           authorized = true;
         }
         const commentMessage = `
-🔍 **ReviewMate Analysis**
+# 🔍 ReviewMate Analysis
+🗑️ **File Deleted**: [${file.filename}](${file.blob_url})
 
-🚫 **File Deleted**: [${file.filename}](${file.blob_url})
-
-🔒 **Authorization**
+## 🔒 Authorization
 - File Owner: ${oldFileOwner}
 - PR Owner: ${prOwner}
-- Authorized: ${authorized ? "Yes" : "No"}
+
+**Authorized**: ${authorized ? "✅" : "❌"}
 `;
 
         // Post the comment to the GitHub pull request
