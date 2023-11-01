@@ -1,8 +1,8 @@
 # ReviewMate
+
 [![Docker Image CI](https://github.com/VaibhavSys/ReviewMate/actions/workflows/docker-image.yml/badge.svg?branch=master)](https://github.com/VaibhavSys/ReviewMate/actions/workflows/docker-image.yml)
 ![GitHub](https://img.shields.io/github/license/VaibhavSys/ReviewMate)
 ![GitHub package.json version (branch)](https://img.shields.io/github/package-json/v/VaibhavSys/ReviewMate/master)
-
 
 > A GitHub App built with [Probot](https://github.com/probot/probot) to assist in the review process of [is-a-dev](https://github.com/is-a-dev/register)
 

@@ -11,54 +11,60 @@ module.exports = (app) => {
     throw new Error("Insufficient Environment Variables");
   }
   app.log.info("The app was loaded!");
-  app.on(["pull_request.opened", "pull_request.synchronize", "pull_request.ready_for_review"], async (context) => {
-    const { owner, repo, pull_number } = context.pullRequest();
-    const { data: changedFiles } = await context.octokit.pulls.listFiles({
-      owner,
-      repo,
-      pull_number,
-    });
-    for (const file of changedFiles) {
-      if (
-        file.status === "modified" ||
-        file.status === "renamed" ||
-        file.status === "changed"
-      ) {
-        // Get the actual file content
-        const fileContent = await utils.getRawFileContent(file.raw_url);
+  app.on(
+    [
+      "pull_request.opened",
+      "pull_request.synchronize",
+      "pull_request.ready_for_review",
+    ],
+    async (context) => {
+      const { owner, repo, pull_number } = context.pullRequest();
+      const { data: changedFiles } = await context.octokit.pulls.listFiles({
+        owner,
+        repo,
+        pull_number,
+      });
+      for (const file of changedFiles) {
+        if (
+          file.status === "modified" ||
+          file.status === "renamed" ||
+          file.status === "changed"
+        ) {
+          // Get the actual file content
+          const fileContent = await utils.getRawFileContent(file.raw_url);
 
-        let url;
-        if ("CNAME" in fileContent.record) {
-          url = `http://${fileContent.record.CNAME}`;
-        } else if ("URL" in fileContent.record) {
-          url = fileContent.record.URL;
-        } else {
-          continue;
-        }
+          let url;
+          if ("CNAME" in fileContent.record) {
+            url = `http://${fileContent.record.CNAME}`;
+          } else if ("URL" in fileContent.record) {
+            url = fileContent.record.URL;
+          } else {
+            continue;
+          }
 
-        const screenshot = await utils.screenshotUrl(url);
-        const imbb = await utils.uploadImageToImgbb(
-          screenshot.toString("base64"),
-        );
-        const imageUrl = imbb.data.url;
-        const description = fileContent.description || "N/A";
-        const repository = fileContent.repo || "N/A";
+          const screenshot = await utils.screenshotUrl(url);
+          const imbb = await utils.uploadImageToImgbb(
+            screenshot.toString("base64"),
+          );
+          const imageUrl = imbb.data.url;
+          const description = fileContent.description || "N/A";
+          const repository = fileContent.repo || "N/A";
 
-        const oldRawFileUrl = file.raw_url.replace(
-          /\/[0-9a-f]{40}\//,
-          "/main/",
-        );
-        const oldFile = await utils.getRawFileContent(oldRawFileUrl);
-        const newFileOwner = fileContent.owner.username;
-        const oldFileOwner = oldFile.owner.username;
-        const prOwner = context.payload.pull_request.user.login;
-        let authorized = false;
-        if (oldFileOwner === prOwner) {
-          authorized = true;
-        }
+          const oldRawFileUrl = file.raw_url.replace(
+            /\/[0-9a-f]{40}\//,
+            "/main/",
+          );
+          const oldFile = await utils.getRawFileContent(oldRawFileUrl);
+          const newFileOwner = fileContent.owner.username;
+          const oldFileOwner = oldFile.owner.username;
+          const prOwner = context.payload.pull_request.user.login;
+          let authorized = false;
+          if (oldFileOwner === prOwner) {
+            authorized = true;
+          }
 
-        // Create a formatted message or comment
-        const commentMessage = `
+          // Create a formatted message or comment
+          const commentMessage = `
 # 🔍 ReviewMate Analysis
 File: [${file.filename}](${file.blob_url})
 Content URL: ${url}
@@ -76,36 +82,36 @@ Repository: ${repository}
 ![Screenshot of ${file.filename}](${imageUrl})
 `;
 
-        // Post the comment to the GitHub pull request
-        await context.octokit.issues.createComment({
-          owner,
-          repo,
-          issue_number: pull_number,
-          body: commentMessage,
-        });
-      } else if (file.status === "added") {
-        // Get the actual file content
-        const fileContent = await utils.getRawFileContent(file.raw_url);
+          // Post the comment to the GitHub pull request
+          await context.octokit.issues.createComment({
+            owner,
+            repo,
+            issue_number: pull_number,
+            body: commentMessage,
+          });
+        } else if (file.status === "added") {
+          // Get the actual file content
+          const fileContent = await utils.getRawFileContent(file.raw_url);
 
-        let url;
+          let url;
 
-        if ("CNAME" in fileContent.record) {
-          url = `http://${fileContent.record.CNAME}`;
-        } else if ("URL" in fileContent.record) {
-          url = fileContent.record.URL;
-        } else {
-          continue;
-        }
+          if ("CNAME" in fileContent.record) {
+            url = `http://${fileContent.record.CNAME}`;
+          } else if ("URL" in fileContent.record) {
+            url = fileContent.record.URL;
+          } else {
+            continue;
+          }
 
-        // Capture a screenshot of the content as if it were a webpage (assuming HTML content)
-        const screenshot = await utils.screenshotUrl(url);
-        const imbb = await utils.uploadImageToImgbb(
-          screenshot.toString("base64"),
-        );
-        const imageUrl = imbb.data.url;
-        const description = fileContent.description || "N/A";
-        const repository = fileContent.repo || "N/A";
-        const commentMessage = `
+          // Capture a screenshot of the content as if it were a webpage (assuming HTML content)
+          const screenshot = await utils.screenshotUrl(url);
+          const imbb = await utils.uploadImageToImgbb(
+            screenshot.toString("base64"),
+          );
+          const imageUrl = imbb.data.url;
+          const description = fileContent.description || "N/A";
+          const repository = fileContent.repo || "N/A";
+          const commentMessage = `
 # 🔍 ReviewMate Analysis
 File: [${file.filename}](${file.blob_url})
 Content URL: ${url}
@@ -116,26 +122,26 @@ Repository: ${repository}
 ![Screenshot of ${file.filename}](${imageUrl})
 `;
 
-        // Post the comment to the GitHub pull request
-        await context.octokit.issues.createComment({
-          owner,
-          repo,
-          issue_number: pull_number,
-          body: commentMessage,
-        });
-      } else {
-        const oldRawFileUrl = file.raw_url.replace(
-          /\/[0-9a-f]{40}\//,
-          "/main/",
-        );
-        const oldFile = await utils.getRawFileContent(oldRawFileUrl);
-        const oldFileOwner = oldFile.owner.username;
-        const prOwner = context.payload.pull_request.user.login;
-        let authorized = false;
-        if (oldFileOwner === prOwner) {
-          authorized = true;
-        }
-        const commentMessage = `
+          // Post the comment to the GitHub pull request
+          await context.octokit.issues.createComment({
+            owner,
+            repo,
+            issue_number: pull_number,
+            body: commentMessage,
+          });
+        } else {
+          const oldRawFileUrl = file.raw_url.replace(
+            /\/[0-9a-f]{40}\//,
+            "/main/",
+          );
+          const oldFile = await utils.getRawFileContent(oldRawFileUrl);
+          const oldFileOwner = oldFile.owner.username;
+          const prOwner = context.payload.pull_request.user.login;
+          let authorized = false;
+          if (oldFileOwner === prOwner) {
+            authorized = true;
+          }
+          const commentMessage = `
 # 🔍 ReviewMate Analysis
 🗑️ **File Deleted**: [${file.filename}](${file.blob_url})
 
@@ -146,15 +152,16 @@ Repository: ${repository}
 **Authorized**: ${authorized ? "✅" : "❌"}
 `;
 
-        // Post the comment to the GitHub pull request
-        await context.octokit.issues.createComment({
-          owner,
-          repo,
-          issue_number: pull_number,
-          body: commentMessage,
-        });
-        await new Promise((r) => setTimeout(r, WAIT_TIME_AFTER_EACH_FILE)); // For Screenshotlayer API ratelimit (2 req / minute)
+          // Post the comment to the GitHub pull request
+          await context.octokit.issues.createComment({
+            owner,
+            repo,
+            issue_number: pull_number,
+            body: commentMessage,
+          });
+          await new Promise((r) => setTimeout(r, WAIT_TIME_AFTER_EACH_FILE)); // For Screenshotlayer API ratelimit (2 req / minute)
+        }
       }
-    }
-  });
+    },
+  );
 };
