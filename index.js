@@ -11,7 +11,7 @@ module.exports = (app) => {
     throw new Error("Insufficient Environment Variables");
   }
   app.log.info("The app was loaded!");
-  app.on(["pull_request.opened", "pull_request.reopened"], async (context) => {
+  app.on(["pull_request.opened", "pull_request.synchronize", "pull_request.ready_for_review"], async (context) => {
     const { owner, repo, pull_number } = context.pullRequest();
     const { data: changedFiles } = await context.octokit.pulls.listFiles({
       owner,
