@@ -1,6 +1,7 @@
 # ReviewMate
+[![Docker Image CI](https://github.com/VaibhavSys/ReviewMate/actions/workflows/docker-image.yml/badge.svg?branch=master)](https://github.com/VaibhavSys/ReviewMate/actions/workflows/docker-image.yml)
 
-> A GitHub App built with [Probot](https://github.com/probot/probot) to assist in the review process of is-a-dev
+> A GitHub App built with [Probot](https://github.com/probot/probot) to assist in the review process of [is-a-dev](https://github.com/is-a-dev/register)
 
 ## Setup
 
@@ -19,7 +20,7 @@ npm start
 docker build -t ReviewMate .
 
 # 2. Start container
-docker run -e APP_ID=<app-id> -e PRIVATE_KEY=<pem-value> ReviewMate
+docker run -e APP_ID=<app-id> -e PRIVATE_KEY=<pem-value> -e IMBB_KEY=<imbb-key> -e SCREENSHOTLAYER_KEY=<screenshotlayer-key> -e WEBHOOK_SECRET=<webhook-secret> ReviewMate
 ```
 
 ## Contributing
