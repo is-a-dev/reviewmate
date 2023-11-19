@@ -59,7 +59,7 @@ module.exports = (app) => {
           const oldFileOwner = oldFile.owner.username;
           const prOwner = context.payload.pull_request.user.login;
           let authorized = false;
-          if (oldFileOwner === prOwner) {
+          if (oldFileOwner.toLowerCase() === prOwner.toLowerCase()) {
             authorized = true;
           }
 
