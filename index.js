@@ -2,6 +2,8 @@
 const utils = require("./utils.js");
 
 WAIT_TIME_AFTER_EACH_FILE = 30000; // In ms
+IGNORE_LABELS = ["maintainer"];
+
 /**
  * This is the main entrypoint to your Probot app
  * @param {import('probot').Probot} app
@@ -24,6 +26,15 @@ module.exports = (app) => {
         repo,
         pull_number,
       });
+      labels = await context.octokit.issues.listLabelsOnIssue({
+        owner,
+        repo,
+        issue_number: pull_number,
+      });
+      labels = labels.data.map((label) => label.name);
+      if (IGNORE_LABELS.some((label) => labels.includes(label))) {
+        return;
+      }
       for (const file of changedFiles) {
         if (
           file.status === "modified" ||
