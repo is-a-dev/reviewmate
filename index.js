@@ -3,6 +3,7 @@ const utils = require("./utils.js");
 
 WAIT_TIME_AFTER_EACH_FILE = 30000; // In ms
 IGNORE_LABELS = ["maintainer"];
+IGNORE_TITLES = ["no-rm"]
 
 /**
  * This is the main entrypoint to your Probot app
@@ -33,6 +34,10 @@ module.exports = (app) => {
       });
       labels = labels.data.map((label) => label.name);
       if (IGNORE_LABELS.some((label) => labels.includes(label))) {
+        return;
+      }
+      const title = context.payload.pull_request.title;
+      if (IGNORE_TITLES.some((ignore_title) => title.includes(ignore_title))) {
         return;
       }
       for (const file of changedFiles) {
