@@ -3,7 +3,7 @@ const utils = require("./utils.js");
 
 WAIT_TIME_AFTER_EACH_FILE = 30000; // In ms
 IGNORE_LABELS = ["maintainer"];
-IGNORE_TITLES = ["no-rm"]
+IGNORE_TITLES = ["no-rm"];
 
 /**
  * This is the main entrypoint to your Probot app
