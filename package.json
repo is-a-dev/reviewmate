@@ -1,11 +1,11 @@
 {
   "name": "reviewmate",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "private": true,
   "description": "An app to assist in the review process of is-a-dev",
   "author": "Vaibhav Dhiman",
   "license": "MIT",
-  "homepage": "https://github.com//",
+  "homepage": "https://github.com/VaibhavSys/ReviewMate",
   "keywords": [
     "probot",
     "github",
