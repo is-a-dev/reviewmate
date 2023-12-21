@@ -23,7 +23,7 @@ npm start
 docker build -t ReviewMate .
 
 # 2. Start container
-docker run -e APP_ID=<app-id> -e PRIVATE_KEY=<pem-value> -e IMBB_KEY=<imbb-key> -e SCREENSHOTLAYER_KEY=<screenshotlayer-key> -e WEBHOOK_SECRET=<webhook-secret> ReviewMate
+docker run -e APP_ID=<app-id> -e PRIVATE_KEY=<pem-value> -e IMGBB_KEY=<imgbb-key> -e SCREENSHOTLAYER_KEY=<screenshotlayer-key> -e WEBHOOK_SECRET=<webhook-secret> ReviewMate
 ```
 
 ## Contributing
