@@ -1,9 +1,9 @@
 // Considers main branch as the absolute truth
 const utils = require("./utils.js");
 
-WAIT_TIME_AFTER_EACH_FILE = 30000; // In ms
-IGNORE_LABELS = ["maintainer"];
-IGNORE_TITLES = ["no-rm"];
+const WAIT_TIME_AFTER_EACH_FILE = 30000; // 30 seconds
+const IGNORE_LABELS = ["maintainer"];
+const IGNORE_TITLES = ["no-rm", "rm-skip"];
 
 /**
  * This is the main entrypoint to your Probot app
@@ -94,8 +94,11 @@ Repository: ${repository}
 
 **Authorized**: ${authorized ? "✅" : "❌"}
 
-## 📸 Screenshot
-![Screenshot of ${file.filename}](${imageUrl})
+<details>
+<summary><h2>📸 Screenshot</h2></summary>
+
+![${file.filename}](${imageUrl})
+</details>
 `;
 
           // Post the comment to the GitHub pull request
@@ -134,8 +137,11 @@ Content URL: ${url}
 Description: ${description}
 Repository: ${repository}
 
-## 📸 Screenshot
-![Screenshot of ${file.filename}](${imageUrl})
+<details>
+<summary><h2>📸 Screenshot</h2></summary>
+
+![${file.filename}](${imageUrl})
+</details>
 `;
 
           // Post the comment to the GitHub pull request
