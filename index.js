@@ -100,7 +100,9 @@ Content URL: ${url}
 ${
   authorized
     ? ""
-    : `**File Owner**: ${oldFileOwner}${newFileOwner ? `**New File Owner**: ${newFileOwner}` : ""}\n**PR Author**: ${prOwner}`
+    : `**File Owner**: ${oldFileOwner}${
+        newFileOwner ? `**New File Owner**: ${newFileOwner}` : ""
+      }\n**PR Author**: ${prOwner}`
 }
 
 <details>
@@ -178,7 +180,9 @@ Content URL: ${url}
 🗑️ **File Deleted**: [${file.filename}](${file.blob_url})
 
 ### ${authorized ? "🔒 Authorized" : "🔓 Unauthorized"}
-${authorized ? "" : `**File Owner**: ${oldFileOwner}\n**PR Author**: ${prOwner}`}
+${
+  authorized ? "" : `**File Owner**: ${oldFileOwner}\n**PR Author**: ${prOwner}`
+}
 `;
 
           // Post the comment to the GitHub pull request
