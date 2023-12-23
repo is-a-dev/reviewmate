@@ -92,19 +92,15 @@ module.exports = (app) => {
 
           // Create a formatted message or comment
           const commentMessage = `
-# 🔍 ReviewMate Analysis
+## 🔍 ReviewMate Analysis
 File: [${file.filename}](${file.blob_url})
 Content URL: ${url}
-Description: ${description}
-Repository: ${repository}
 
-### 🔒 Authorized: ${authorized ? "✅" : "❌"}
+### ${authorized ? "🔒 Authorized" : "🔓 Unauthorized"}
 ${
   authorized
     ? ""
-    : `**File Owner**: ${oldFileOwner}${
-        newFileOwner ? `**New File Owner**: ${newFileOwner}` : ""
-      }\n**PR Author**: ${prOwner}`
+    : `**File Owner**: ${oldFileOwner}${newFileOwner ? `**New File Owner**: ${newFileOwner}` : ""}\n**PR Author**: ${prOwner}`
 }
 
 <details>
@@ -144,11 +140,9 @@ ${
           const description = fileContent.description || "N/A";
           const repository = fileContent.repo || "N/A";
           const commentMessage = `
-# 🔍 ReviewMate Analysis
+## 🔍 ReviewMate Analysis
 File: [${file.filename}](${file.blob_url})
 Content URL: ${url}
-Description: ${description}
-Repository: ${repository}
 
 <details>
 <summary><h3>📸 Screenshot</h3></summary>
@@ -180,13 +174,11 @@ Repository: ${repository}
           }
 
           const commentMessage = `
-# 🔍 ReviewMate Analysis
+## 🔍 ReviewMate Analysis
 🗑️ **File Deleted**: [${file.filename}](${file.blob_url})
 
-### 🔒 Authorized: ${authorized ? "✅" : "❌"}
-${
-  authorized ? "" : `**File Owner**: ${oldFileOwner}\n**PR Author**: ${prOwner}`
-}
+### ${authorized ? "🔒 Authorized" : "🔓 Unauthorized"}
+${authorized ? "" : `**File Owner**: ${oldFileOwner}\n**PR Author**: ${prOwner}`}
 `;
 
           // Post the comment to the GitHub pull request
