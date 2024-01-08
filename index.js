@@ -4,7 +4,8 @@ const utils = require("./utils.js");
 const WAIT_TIME_AFTER_EACH_FILE = 30000; // 30 seconds
 const IGNORE_LABELS = ["maintainer"];
 const IGNORE_TITLES = ["no-rm", "rm-skip"];
-const PR_MERGED_CONTENT_LINK = "https://raw.githubusercontent.com/is-a-dev/team-docs/main/pr-merged.md"
+const PR_MERGED_CONTENT_LINK =
+  "https://raw.githubusercontent.com/is-a-dev/team-docs/main/pr-merged.md";
 
 /**
  * This is the main entrypoint to your Probot app
@@ -17,22 +18,21 @@ module.exports = (app) => {
     throw new Error("Missing Environment Variable: IMGBB_KEY");
 
   app.log.info("The app was loaded!");
-  app.on([
-    "pull_request.closed",
-  ],
-  async (context) => {
+  app.on(["pull_request.closed"], async (context) => {
     if (context.payload.pull_request.merged !== true) {
       return;
     }
     const { owner, repo, pull_number } = context.pullRequest();
-    const pr_merged_message = await utils.getRawFileContent(PR_MERGED_CONTENT_LINK);
+    const pr_merged_message = await utils.getRawFileContent(
+      PR_MERGED_CONTENT_LINK,
+    );
     await context.octokit.issues.createComment({
       owner,
       repo,
       issue_number: pull_number,
       body: pr_merged_message,
     });
-  })
+  });
   app.on(
     [
       "pull_request.opened",
