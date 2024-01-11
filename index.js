@@ -1,13 +1,13 @@
 // Considers main branch as the absolute truth
 const utils = require("./utils.js");
-const path = require('path');
-const fetch = require('node-fetch');
+const path = require("path");
+const fetch = require("node-fetch");
 
 const WAIT_TIME_AFTER_EACH_FILE = 30000; // 30 seconds
 const IGNORE_LABELS = ["maintainer"];
 const IGNORE_TITLES = ["no-rm", "rm-skip"];
-const HOSTING_MAIN_IP = "217.174.245.249"
-const ACTIVATE_HOSTING_ENDPOINT = "https://hosts.is-a.dev/api/activate"
+const HOSTING_MAIN_IP = "217.174.245.249";
+const ACTIVATE_HOSTING_ENDPOINT = "https://hosts.is-a.dev/api/activate";
 const PR_MERGED_CONTENT_LINK =
   "https://raw.githubusercontent.com/is-a-dev/team-docs/main/pr-merged.md";
 
@@ -52,11 +52,13 @@ module.exports = (app) => {
         continue;
       }
       const url = new URL(ACTIVATE_HOSTING_ENDPOINT);
-      const subdomain = path.basename(file.filename, '.json');
-      url.searchParams.append('domain', subdomain);
-      url.searchParams.append('NOTIFY_TOKEN', process.env.HOSTING_TOKEN);
+      const subdomain = path.basename(file.filename, ".json");
+      url.searchParams.append("domain", subdomain);
+      url.searchParams.append("NOTIFY_TOKEN", process.env.HOSTING_TOKEN);
       const response = await fetch(url);
-      app.log.info(`Activated Hosting for ${subdomain}. Status: ${response.status}`)
+      app.log.info(
+        `Activated Hosting for ${subdomain}. Status: ${response.status}`,
+      );
     }
 
     // Send Pull Request Merged Message
