@@ -65,7 +65,7 @@ module.exports = (app) => {
         return;
 
       // Return on 5+ files to avoid comment spam
-      if(changedFiles.length > 5) return;
+      if (changedFiles.length > 5) return;
 
       for (const file of changedFiles) {
         if (
