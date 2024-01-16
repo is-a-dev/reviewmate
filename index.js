@@ -1,13 +1,9 @@
 // Considers main branch as the absolute truth
 const utils = require("./utils.js");
-const path = require("path");
-const fetch = require("node-fetch");
 
 const WAIT_TIME_AFTER_EACH_FILE = 30000; // 30 seconds
 const IGNORE_LABELS = ["maintainer"];
 const IGNORE_TITLES = ["no-rm", "rm-skip"];
-const HOSTING_MAIN_IP = "217.174.245.249";
-const ACTIVATE_HOSTING_ENDPOINT = "https://hosts.is-a.dev/api/activate";
 const PR_MERGED_CONTENT_LINK =
   "https://raw.githubusercontent.com/is-a-dev/team-docs/main/pr-merged.md";
 
@@ -20,8 +16,6 @@ module.exports = (app) => {
     throw new Error("Missing Environment Variable: SCREENSHOTLAYER_KEY");
   if (!process.env.IMGBB_KEY)
     throw new Error("Missing Environment Variable: IMGBB_KEY");
-  if (!process.env.HOSTING_TOKEN)
-    throw new Error("Missing Environment Variable: HOSTING_TOKEN");
 
   app.log.info("The app was loaded!");
   app.on(["pull_request.closed"], async (context) => {
@@ -29,37 +23,6 @@ module.exports = (app) => {
       return;
     }
     const { owner, repo, pull_number } = context.pullRequest();
-
-    // Activate is-a-dev Hosting if the domain uses it
-    const { data: changedFiles } = await context.octokit.pulls.listFiles({
-      owner,
-      repo,
-      pull_number,
-    });
-
-    for (const file of changedFiles) {
-      if (file.status != "added" && file.status != "renamed") {
-        continue;
-      }
-      const fileContent = await utils.getRawFileContent(file.raw_url);
-      if (!fileContent.record) {
-        continue;
-      }
-      if (!fileContent.record.A) {
-        continue;
-      }
-      if (!fileContent.record.A.includes(HOSTING_MAIN_IP)) {
-        continue;
-      }
-      const url = new URL(ACTIVATE_HOSTING_ENDPOINT);
-      const subdomain = path.basename(file.filename, ".json");
-      url.searchParams.append("domain", subdomain);
-      url.searchParams.append("NOTIFY_TOKEN", process.env.HOSTING_TOKEN);
-      const response = await fetch(url);
-      app.log.info(
-        `Activated Hosting for ${subdomain}. Status: ${response.status}`,
-      );
-    }
 
     // Send Pull Request Merged Message
     const pr_merged_message = await utils.getRawFileContent(
@@ -100,6 +63,9 @@ module.exports = (app) => {
 
       if (IGNORE_TITLES.some((ignore_title) => title.includes(ignore_title)))
         return;
+
+      // Return on 5+ files to avoid comment spam
+      if(changedFiles.length > 5) return;
 
       for (const file of changedFiles) {
         if (
