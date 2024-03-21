@@ -112,6 +112,20 @@ module.exports = (app) => {
             authorized = true;
           }
 
+          if (oldFileOwner.toLowerCase() === "is-a-dev") {
+            utils.isStaffMember(prOwner).then((isStaff) => {
+              if (isStaff) {
+                authorized = true;
+                context.octokit.issues.addLabels({
+                  owner,
+                  repo,
+                  issue_number: pull_number,
+                  labels: ["maintainer"],
+                });
+              }
+            });
+          }
+
           // Create a formatted message or comment
           const commentMessage = `
 ## 🔍 ReviewMate Analysis
