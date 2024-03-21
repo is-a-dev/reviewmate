@@ -102,9 +102,16 @@ async function uploadImageToImgbb(image) {
   }
 }
 
+async function isStaffMember(username) {
+  const staffMembers = process.env.STAFF_MEMBERS.split(",");
+  return staffMembers.includes(username);
+}
+
+
 module.exports = {
   getRawFileContent,
   getAllFilesContent,
   screenshotUrl,
   uploadImageToImgbb,
+  isStaffMember,
 };
